@@ -24,7 +24,7 @@ DOMAIN-00.0 — Fondations / frontières
 DOMAIN-00.1 — Structure du travail
 DOMAIN-00.2 — Acteurs / organisations / rôles / métiers
 DOMAIN-00.3 — Contributions / faits / preuves
-DOMAIN-00.4 — Ressources / supply / procurement
+DOMAIN-00.4 — Ressources / supply / custody
 DOMAIN-00.5 — Planning / temps / exécution
 DOMAIN-00.6 — Économie chantier
 DOMAIN-00.7 — Qualité / changements / responsabilités
@@ -213,47 +213,81 @@ Décisions adoptées :
 - une contribution banale peut rester uniquement une contribution ;
 - les actes à enjeu juridique, contractuel, financier, sécurité ou responsabilité nécessitent un gate d'autorité supplémentaire.
 
-Invariants :
-
-```text
-ProjectContribution ≠ Nestor analysis
-original ≠ derivative ≠ translation ≠ interpretation
-Contribution ≠ Observation structurée
-Evidence ≠ vérité
-Evidence ≠ causalité
-Evidence ≠ responsabilité
-Observation REPORTED ≠ Observation VERIFIED
-ProjectEvent ≠ event bus technique
-document reçu ≠ document approuvé
-plan révisé ≠ baseline modifiée
-Issue ≠ Blocker
-Issue ≠ Risk
-Blocker ≠ Delay
-Decision ≠ Action
-Action COMPLETED ≠ Issue RESOLVED
-Nestor candidate ≠ authoritative domain object
-AUTHOR-CONFIRMED ≠ DOMAIN-VALIDATED
-```
-
 Doctrine de mission Nestor :
 
 > **Une interprétation prudente, traçable et fidèle est préférable à une reformulation élégante mais plus forte que ce que la source permet d'affirmer.**
 
 ---
 
-## DOMAIN-00.4 — Materials / Equipment / Supply / Procurement
+## DOMAIN-00.4 — Materials / Equipment / Supply / Custody
 
-À cadrer :
+Status: **validated conceptually**
 
-- matériaux incorporés ;
-- équipements / moyens d'exécution ;
-- location ;
-- besoins ;
-- fourniture client ;
-- achat ;
-- livraison ;
-- approbation ;
-- provenance.
+Document détaillé : [`DOMAIN-00.4-RESOURCES-SUPPLY-CUSTODY.md`](./DOMAIN-00.4-RESOURCES-SUPPLY-CUSTODY.md)
+
+Noyau adopté :
+
+```text
+MaterialSpecification
+MaterialRequirement
+MaterialSelection
+EquipmentRequirement
+EquipmentAssignment
+EquipmentProvision
+EquipmentHandover
+EquipmentReturn
+SupplyAssignment
+ProcurementNeed
+ResourceDelivery
+DeliveredResourceItem
+ResourceReceipt
+ResourceAcceptance
+MaterialUsageRecord
+ResourceIncident
+```
+
+Décisions adoptées :
+
+- `Material ≠ Equipment` ;
+- la spécification technique reste distincte du produit commercial ;
+- le besoin ressource reste distinct du besoin d'achat ;
+- une proposition de produit ou substitution n'est jamais assimilée à une approbation ;
+- `supplied_by`, `paid_by`, `installed_by`, `owned_by` et `liable_for` sont des dimensions distinctes ;
+- une fourniture client ne détermine pas automatiquement la responsabilité d'un défaut ;
+- l'affectation d'un équipement ne signifie pas qu'il a été physiquement remis à un acteur ;
+- `owner`, `provider`, `custodian` et `operator` restent distincts ;
+- les équipements MDTC, sous-traitants ou partenaires peuvent être mis à disposition et remis physiquement avec état/accessoires/evidence ;
+- un retour peut enregistrer état et accessoires manquants sans conclure à une faute ;
+- `ResourceIncident` couvre disparition, shortage, casse, dommage, perte, usage non autorisé, gaspillage inattendu et vol signalé ;
+- `resource missing ≠ theft established ≠ perpetrator identified ≠ responsibility established` ;
+- `damage ≠ negligence`, `unexpected waste ≠ fraud`, `variance ≠ fraud` ;
+- la causalité et la responsabilité restent reportées à DOMAIN-00.7 ;
+- le WMS complet, la comptabilité fournisseur et la transaction commerciale de location restent hors scope ;
+- une machine louée extérieurement redevient pertinente dès qu'elle entre dans la réalité opérationnelle du chantier ;
+- `rental transaction ≠ project equipment custody`.
+
+Invariants principaux :
+
+```text
+MaterialSpecification ≠ CommercialProduct
+ResourceRequirement ≠ ProcurementNeed
+EquipmentRequirement ≠ EquipmentAssignment
+EquipmentAssignment ≠ EquipmentHandover
+```
+
+```text
+owner ≠ provider ≠ custodian ≠ operator
+```
+
+```text
+ORDERED ≠ DELIVERED ≠ RECEIVED ≠ INSPECTED ≠ ACCEPTED ≠ INCORPORATED
+```
+
+```text
+WASTED ≠ abnormal waste ≠ negligence ≠ responsibility
+resource missing ≠ theft established
+reported theft ≠ verified theft
+```
 
 ---
 
@@ -338,17 +372,6 @@ Objectif : consolider l'ontologie, les événements et les projections consommé
 - intégrations externes ;
 - analytics / knowledge mining.
 
-Le domaine peut référencer :
-
-```text
-deliberation_ref
-mission_ref
-knowledge_ref
-actor_ref
-```
-
-mais ne réimplémente pas le moteur de délibération, Chronos, CCU, IAM ou le routage modèles.
-
 ---
 
 ## DOMAIN-00.9 — Spécimens
@@ -364,9 +387,10 @@ maison individuelle
 lotissement / Program multi-Projects
 qualification numérique non convertie
 contribution terrain multilingue voix + photos
+mise à disposition équipement MDTC → salarié/sous-traitant
+équipement fourni par un sous-traitant
+perte/casse/disparition de ressource sans attribution automatique de faute
 ```
-
-Le but est de vérifier que le domaine reste proportionné aussi bien pour une petite intervention que pour une opération complexe.
 
 ---
 
@@ -420,6 +444,12 @@ RAW ≠ INTERPRETED ≠ AUTHOR-CONFIRMED ≠ DOMAIN-VALIDATED
 source_language ≠ interaction_language ≠ canonical_language
 ```
 
+```text
+owner ≠ provider ≠ custodian ≠ operator
+resource missing ≠ theft established
+loss ≠ responsibility
+```
+
 ## Projection UX
 
 Principe :
@@ -436,12 +466,12 @@ Program overview
 Mes chantiers
 Mes WorkPackages
 Contribution terrain mobile
+Matériel mis à disposition
+Retours / anomalies ressources
 ```
-
-Ces vues sont des projections sur les mêmes objets et doivent être filtrables selon le périmètre de responsabilité effectif de l'acteur.
 
 ## Prochaine décision
 
-DOMAIN-00.3 étant validé conceptuellement, la prochaine discussion porte sur :
+DOMAIN-00.4 étant validé conceptuellement, la prochaine discussion porte sur :
 
-**DOMAIN-00.4 — Materials / Equipment / Supply / Procurement**.
+**DOMAIN-00.5 — Planning / Time / Meetings / Execution**.

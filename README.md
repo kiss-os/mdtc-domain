@@ -50,6 +50,9 @@ Contribution ≠ Observation validée
 Observation ≠ causalité
 Causalité ≠ responsabilité
 Expertise ≠ autorité ≠ permission
+Role ≠ Trade ≠ Authority ≠ Permission
+Partner ≠ Subcontractor
+Supplier ≠ Subcontractor
 Decision ≠ Action
 Project live state ≠ contractual baseline
 Nestor interpretation ≠ MDTC business truth
@@ -95,7 +98,7 @@ Program — Lotissement Les Oliviers
 
 Le choix **une maison = un `Project`** permet de préserver un périmètre clair pour le planning, les observations, les preuves, les coûts, la qualité et les responsabilités, tout en laissant `Program` agréger l'ensemble.
 
-Voir [`docs/DOMAIN-00.1-WORK-BREAKDOWN.md`](./docs/DOMAIN-00.1-WORK-BREAKDOWN.md) pour le contrat conceptuel validé de la structure du travail.
+Voir [`docs/DOMAIN-00.1-WORK-BREAKDOWN.md`](./docs/DOMAIN-00.1-WORK-BREAKDOWN.md) pour la structure du travail, et [`docs/DOMAIN-00.2-ACTORS-ROLES-TRADES.md`](./docs/DOMAIN-00.2-ACTORS-ROLES-TRADES.md) pour le modèle des acteurs, rôles et métiers.
 
 ## Définition actuelle de `Project`
 
@@ -205,13 +208,15 @@ Le chantier de fondation est **DOMAIN-00 — ontologie fondamentale du chantier*
 Roadmap actuelle :
 
 1. **DOMAIN-00.1** — Project / Program / Work Breakdown / WorkPackage — **validé conceptuellement**
-2. **DOMAIN-00.2** — Actors / Organizations / Roles / Trades
-3. **DOMAIN-00.3** — Materials / Equipment / Supply / Procurement
-4. **DOMAIN-00.4** — Economics: estimated / committed / actual / billed / paid / margin
+2. **DOMAIN-00.2** — Actors / Organizations / Roles / Trades — **validé conceptuellement**
+3. **DOMAIN-00.3** — Contributions / faits / preuves
+4. **DOMAIN-00.4** — Materials / Equipment / Supply / Procurement
 5. **DOMAIN-00.5** — Planning / TimeEntry / Meetings / execution lifecycle
-6. **DOMAIN-00.6** — Changes / Baselines / Decisions / Actions / Impacts
-7. **DOMAIN-00.7** — Responsibility / Warranty context / Client-supplied items / Evidence
-8. **DOMAIN-00.8** — Consolidation / event model / projections
+6. **DOMAIN-00.6** — Economics: estimated / committed / actual / billed / paid / margin
+7. **DOMAIN-00.7** — Quality / Changes / Responsibility
+8. **DOMAIN-00.8** — Consolidation Nestor / event model / projections
+9. **DOMAIN-00.9** — Spécimens / validation
+10. **DOMAIN-00.10** — Consolidation technique
 
 Le cadrage vivant de DOMAIN-00 est documenté dans [`docs/DOMAIN-00.md`](./docs/DOMAIN-00.md).
 

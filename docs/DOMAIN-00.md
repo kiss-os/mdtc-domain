@@ -137,42 +137,107 @@ Expertise ≠ Authority ≠ Permission ≠ Responsibility
 
 ## DOMAIN-00.3 — Contributions / faits / preuves
 
-À cadrer :
+Status: **validated conceptually**
+
+Document détaillé : [`DOMAIN-00.3-CONTRIBUTIONS-EVIDENCE.md`](./DOMAIN-00.3-CONTRIBUTIONS-EVIDENCE.md)
+
+Mission Nestor associée : [`../missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md`](../missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md)
+
+Noyau adopté :
 
 ```text
 ProjectContribution
-ProjectEvent
-Observation
+ContributionInterpretation
+ContributorConfirmation
 Evidence
+EvidenceLink
+Observation
+ProjectEvent
 Issue
 Blocker
 Risk
-Action
 Decision
+Action
 ```
 
-Entrées typiques :
+Chaîne de traitement multilingue adoptée :
 
 ```text
-commentaire
-photo
-plan
-document
-mesure
-annotation
+ProjectContribution originale
+        ↓
+Nestor interprète
+        ↓
+ContributionInterpretation
+        ↓
+restitution dans interaction_language
+        ↓
+ContributorConfirmation
+        ↓
+ConfirmedInterpretation
+        ↓
+candidats métier
+        ↓ gate éventuel
+objet métier autoritatif
 ```
 
-Séparation à préserver :
+Niveaux épistémiques :
 
 ```text
-ProjectContribution
-        ↓ analyse Nestor
-Candidate
-        ↓ validation / gate
-Domain object
+L0 — RAW
+L1 — INTERPRETED
+L2 — AUTHOR-CONFIRMED
+L3 — DOMAIN-VALIDATED
 ```
 
-Un message ou une analyse IA ne devient pas automatiquement une observation, une décision, une cause ou une responsabilité.
+Décisions adoptées :
+
+- l'original est conservé et n'est jamais remplacé silencieusement par un dérivé ;
+- `original ≠ transcription ≠ traduction ≠ interprétation` ;
+- les contributions peuvent être produites dans la langue réelle de l'intervenant ;
+- `source_language`, `interaction_language` et `canonical_language` sont distinguées ;
+- le français est la langue canonique de référence pour les objets métier MDTC ;
+- la restitution utilisateur peut être faite dans sa langue d'interaction, par exemple en turc ;
+- l'UX mobile doit privilégier voix, photo, correction et confirmation simple ;
+- une lecture vocale de la restitution doit pouvoir être proposée ;
+- l'auteur confirme que Nestor a correctement compris son propos, pas que le fait est techniquement vérifié ;
+- `ContributionInterpretation` sépare obligatoirement `STATED_BY_CONTRIBUTOR`, `OBSERVED_FROM_EVIDENCE`, `INFERRED` et `UNKNOWN` ;
+- Nestor ne doit pas embellir, durcir ou accroître la certitude du propos source ;
+- Nestor ne devient jamais l'auteur fictif d'une contribution humaine ;
+- `Evidence` documente ou étaye mais n'est pas assimilée à la vérité ;
+- une `Observation` peut être `REPORTED`, `CORROBORATED`, `VERIFIED`, `DISPUTED` ou `RETRACTED` ;
+- `ProjectEvent` représente un événement métier, pas l'event bus technique ;
+- document reçu, revu, approuvé et baseline sont distincts ;
+- `Issue`, `Blocker`, `Delay` et `Risk` restent distincts ;
+- `Decision ≠ Action` ;
+- `Action COMPLETED ≠ Issue RESOLVED` ;
+- une contribution banale peut rester uniquement une contribution ;
+- les actes à enjeu juridique, contractuel, financier, sécurité ou responsabilité nécessitent un gate d'autorité supplémentaire.
+
+Invariants :
+
+```text
+ProjectContribution ≠ Nestor analysis
+original ≠ derivative ≠ translation ≠ interpretation
+Contribution ≠ Observation structurée
+Evidence ≠ vérité
+Evidence ≠ causalité
+Evidence ≠ responsabilité
+Observation REPORTED ≠ Observation VERIFIED
+ProjectEvent ≠ event bus technique
+document reçu ≠ document approuvé
+plan révisé ≠ baseline modifiée
+Issue ≠ Blocker
+Issue ≠ Risk
+Blocker ≠ Delay
+Decision ≠ Action
+Action COMPLETED ≠ Issue RESOLVED
+Nestor candidate ≠ authoritative domain object
+AUTHOR-CONFIRMED ≠ DOMAIN-VALIDATED
+```
+
+Doctrine de mission Nestor :
+
+> **Une interprétation prudente, traçable et fidèle est préférable à une reformulation élégante mais plus forte que ce que la source permet d'affirmer.**
 
 ---
 
@@ -298,6 +363,7 @@ rénovation multi-lots
 maison individuelle
 lotissement / Program multi-Projects
 qualification numérique non convertie
+contribution terrain multilingue voix + photos
 ```
 
 Le but est de vérifier que le domaine reste proportionné aussi bien pour une petite intervention que pour une opération complexe.
@@ -334,7 +400,7 @@ Task ≠ ControlPoint
 ```
 
 ```text
-Contribution ≠ Observation validée
+Contribution ≠ Observation structurée
 Observation ≠ causalité
 Causalité ≠ responsabilité
 Expertise ≠ autorité ≠ permission
@@ -347,6 +413,11 @@ Nestor interpretation ≠ MDTC business truth
 Role ≠ Trade ≠ Authority ≠ Permission
 Partner ≠ Subcontractor
 Supplier ≠ Subcontractor
+```
+
+```text
+RAW ≠ INTERPRETED ≠ AUTHOR-CONFIRMED ≠ DOMAIN-VALIDATED
+source_language ≠ interaction_language ≠ canonical_language
 ```
 
 ## Projection UX
@@ -364,12 +435,13 @@ Historique
 Program overview
 Mes chantiers
 Mes WorkPackages
+Contribution terrain mobile
 ```
 
 Ces vues sont des projections sur les mêmes objets et doivent être filtrables selon le périmètre de responsabilité effectif de l'acteur.
 
 ## Prochaine décision
 
-DOMAIN-00.2 étant validé conceptuellement, la prochaine discussion porte sur :
+DOMAIN-00.3 étant validé conceptuellement, la prochaine discussion porte sur :
 
-**DOMAIN-00.3 — Contributions / faits / preuves**.
+**DOMAIN-00.4 — Materials / Equipment / Supply / Procurement**.

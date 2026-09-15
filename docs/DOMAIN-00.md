@@ -107,26 +107,30 @@ Définition de `WorkPackage` :
 
 ## DOMAIN-00.2 — Actors / Organizations / Roles / Trades
 
-À cadrer :
+Status: **validated conceptually**
 
-- personnes ;
-- organisations ;
-- acteurs projet ;
-- rôles contextuels ;
-- corps de métier ;
-- partenaires ;
-- sous-traitants ;
-- BET ;
-- contremaître ;
-- salariés ;
-- client ;
-- autorités et responsabilités ;
-- expertise contextualisée.
+Document détaillé : [`DOMAIN-00.2-ACTORS-ROLES-TRADES.md`](./DOMAIN-00.2-ACTORS-ROLES-TRADES.md)
 
-Invariant :
+Décisions adoptées :
+
+- `Person` et `Organization` restent des identités du socle ; `mdtc-domain` les référence via `PartyRef` ;
+- `ProjectActor` représente la participation contextualisée d'une personne ou organisation à un `Project` ;
+- `RoleAssignment` décrit la fonction exercée dans un scope donné ;
+- `TradeAssignment` décrit la discipline / le corps de métier dans un scope donné ;
+- `RepresentationAssignment` relie une personne à l'organisation au nom de laquelle elle agit ;
+- `AuthorityAssignment` représente une autorité métier contextualisée sans devenir une permission système ;
+- `WorkScopeRef` permet de porter le scope au niveau `Program`, `Project`, `WorkLot`, `WorkPackage` ou `Task` ;
+- l'expertise globale/calibrée reste dans Nestor / CCU ; le domaine peut seulement la référencer ;
+- les permissions effectives restent résolues par Nestor / CCU / Mithra ;
+- la responsabilité détaillée est reportée à DOMAIN-00.7 ;
+- `PARTNER ≠ SUBCONTRACTOR` ;
+- `SUPPLIER ≠ SUBCONTRACTOR`.
+
+Invariants :
 
 ```text
-expertise ≠ authority ≠ permission ≠ responsibility
+Role ≠ Trade ≠ Authority ≠ Permission
+Expertise ≠ Authority ≠ Permission ≠ Responsibility
 ```
 
 ---
@@ -339,6 +343,12 @@ Project live state ≠ contractual baseline
 Nestor interpretation ≠ MDTC business truth
 ```
 
+```text
+Role ≠ Trade ≠ Authority ≠ Permission
+Partner ≠ Subcontractor
+Supplier ≠ Subcontractor
+```
+
 ## Projection UX
 
 Principe :
@@ -360,6 +370,6 @@ Ces vues sont des projections sur les mêmes objets et doivent être filtrables 
 
 ## Prochaine décision
 
-DOMAIN-00.1 étant validé conceptuellement, la prochaine discussion porte sur :
+DOMAIN-00.2 étant validé conceptuellement, la prochaine discussion porte sur :
 
-**DOMAIN-00.2 — Actors / Organizations / Roles / Trades**.
+**DOMAIN-00.3 — Contributions / faits / preuves**.

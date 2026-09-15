@@ -15,44 +15,97 @@ Le domaine doit pouvoir représenter aussi bien :
 - un programme multi-projets comme un lotissement ;
 - une opération non remportée mais ayant généré du travail, des preuves et des connaissances réutilisables.
 
-## Roadmap
+## Fil rouge
 
-### DOMAIN-00.1 — Project / Program / Work Breakdown / WorkPackage
-
-À stabiliser :
+Le plan reste vivant et amendable au fur et à mesure des arbitrages métier.
 
 ```text
-Program
+DOMAIN-00.0 — Fondations / frontières
+DOMAIN-00.1 — Structure du travail
+DOMAIN-00.2 — Acteurs / organisations / rôles / métiers
+DOMAIN-00.3 — Contributions / faits / preuves
+DOMAIN-00.4 — Ressources / supply / procurement
+DOMAIN-00.5 — Planning / temps / exécution
+DOMAIN-00.6 — Économie chantier
+DOMAIN-00.7 — Qualité / changements / responsabilités
+DOMAIN-00.8 — Consolidation Nestor / event model / projections
+DOMAIN-00.9 — Spécimens / validation
+DOMAIN-00.10 — Consolidation technique
+```
+
+Pour chaque étape :
+
+```text
+Discussion métier
+↓
+cas réels / contre-exemples
+↓
+schéma Excalidraw
+↓
+invariants
+↓
+contrat proposé
+↓
+validation Président
+↓
+écriture dans mdtc-domain
+↓
+spécimens / tests
+```
+
+---
+
+## DOMAIN-00.1 — Project / Program / Work Breakdown / WorkPackage
+
+Status: **validated conceptually**
+
+Document détaillé : [`DOMAIN-00.1-WORK-BREAKDOWN.md`](./DOMAIN-00.1-WORK-BREAKDOWN.md)
+
+Hiérarchie validée :
+
+```text
+Program?
+   ↓
 Project
-Site / Location
-Lot
+   ↓
+WorkLot?
+   ↓
 WorkPackage
-Task
-ProjectContribution
-ProjectEvent
-Requirement
-Dependency
-Interface
-Evidence
-Baseline
+   ↓
+Task?
 ```
 
 Décisions adoptées :
 
-- `Program` est le niveau standard de regroupement multi-projets.
+- `Program` est le niveau standard de regroupement multi-projets ;
 - un lotissement est par défaut un `Program` contenant un `Project` par maison, plus éventuellement des projets dédiés aux communs / VRD ;
 - `Project` ne signifie ni marché signé ni chantier actif ;
 - une qualification numérique peut déjà produire un `Project` ;
 - une visite ou un constat peut être un `Project` autonome ;
 - les vues Qualification / Opérations / Historique sont des projections, pas des modèles distincts ;
 - `Site ≠ Project` ;
-- tous les niveaux `Program → Project → Lot → WorkPackage → Task` ne sont pas obligatoires.
+- `WorkLot` remplace le terme générique `Lot` dans le contrat de domaine pour éviter l'ambiguïté avec `Parcel` ;
+- `WorkLot` est optionnel ;
+- `Task` est optionnelle ;
+- `WorkPackage` est l'unité opérationnelle centrale ;
+- un `WorkPackage` appartient à exactement un `Project` et au maximum un `WorkLot` ;
+- un besoin multi-lots est préférentiellement décomposé en plusieurs `WorkPackage` reliés par `Interface` / `Dependency` ;
+- `Task ≠ TimeEntry` ;
+- `Task ≠ ControlPoint` ;
+- `WorkPackage ≠ QuoteLine` ;
+- pendant la qualification, `WorkPackageCandidate ≠ WorkPackage`.
 
 Définition de travail :
 
 > Un `Project` est l'enveloppe persistante d'une intention de travail suffisamment identifiée, depuis sa première qualification numérique ou terrain jusqu'à sa clôture, qu'un marché soit finalement remporté ou non.
 
-### DOMAIN-00.2 — Actors / Organizations / Roles / Trades
+Définition de `WorkPackage` :
+
+> Un `WorkPackage` est une unité cohérente de travail suffisamment autonome pour être estimée, planifiée, affectée, suivie et contrôlée.
+
+---
+
+## DOMAIN-00.2 — Actors / Organizations / Roles / Trades
 
 À cadrer :
 
@@ -64,7 +117,11 @@ Définition de travail :
 - partenaires ;
 - sous-traitants ;
 - BET ;
-- autorités et responsabilités.
+- contremaître ;
+- salariés ;
+- client ;
+- autorités et responsabilités ;
+- expertise contextualisée.
 
 Invariant :
 
@@ -72,7 +129,50 @@ Invariant :
 expertise ≠ authority ≠ permission ≠ responsibility
 ```
 
-### DOMAIN-00.3 — Materials / Equipment / Supply / Procurement
+---
+
+## DOMAIN-00.3 — Contributions / faits / preuves
+
+À cadrer :
+
+```text
+ProjectContribution
+ProjectEvent
+Observation
+Evidence
+Issue
+Blocker
+Risk
+Action
+Decision
+```
+
+Entrées typiques :
+
+```text
+commentaire
+photo
+plan
+document
+mesure
+annotation
+```
+
+Séparation à préserver :
+
+```text
+ProjectContribution
+        ↓ analyse Nestor
+Candidate
+        ↓ validation / gate
+Domain object
+```
+
+Un message ou une analyse IA ne devient pas automatiquement une observation, une décision, une cause ou une responsabilité.
+
+---
+
+## DOMAIN-00.4 — Materials / Equipment / Supply / Procurement
 
 À cadrer :
 
@@ -86,26 +186,14 @@ expertise ≠ authority ≠ permission ≠ responsibility
 - approbation ;
 - provenance.
 
-### DOMAIN-00.4 — Economics
+---
 
-Axes :
-
-```text
-ESTIMATED
-COMMITTED
-ACTUAL
-BILLED
-PAID
-```
-
-Le modèle doit permettre l'analyse des écarts et marges sans confondre coût réel et facturation.
-
-### DOMAIN-00.5 — Planning / Time / Meetings / Execution
+## DOMAIN-00.5 — Planning / Time / Meetings / Execution
 
 À cadrer :
 
 - planning ;
-- TimeEntry ;
+- `TimeEntry` ;
 - visite ;
 - réunion ;
 - jalon ;
@@ -120,25 +208,43 @@ Invariant :
 SiteMeeting ≠ TimeEntry ≠ BillableItem
 ```
 
-### DOMAIN-00.6 — Changes / Baselines / Decisions / Actions / Impacts
+---
 
-Flux candidat :
+## DOMAIN-00.6 — Economics
+
+Axes :
 
 ```text
-Observation / SiteMeeting
-        ↓
+ESTIMATED
+COMMITTED
+ACTUAL
+BILLED
+PAID
+```
+
+Le modèle doit permettre l'analyse des écarts et marges sans confondre coût réel et facturation.
+
+---
+
+## DOMAIN-00.7 — Quality / Changes / Responsibility
+
+À cadrer notamment :
+
+```text
+WorkExecutionAssessment
+ExecutionIrregularity
+Rework
+QualityAssessment
+CustomerFeedback
 ChangeRequest
-        ↓
 ImpactAssessment
-        ↓
-Decision
-        ↓
-ChangeOrder / nouvelle baseline
+DecisionRecord
+ChangeOrder
+ProjectBaseline
+ResponsibilityAllocation
 ```
 
 Une baseline acceptée ne doit pas être réécrite.
-
-### DOMAIN-00.7 — Responsibility / Warranty context / Evidence
 
 Le domaine décrit les faits nécessaires au raisonnement juridique sans inventer automatiquement la règle de droit.
 
@@ -151,58 +257,87 @@ fact
 ≠ legal effect
 ```
 
-### DOMAIN-00.8 — Consolidation / event model / projections
+---
+
+## DOMAIN-00.8 — Consolidation Nestor / event model / projections
 
 Objectif : consolider l'ontologie, les événements et les projections consommées par :
 
 - frontend MDTC ;
-- mdtc-docs ;
+- `mdtc-docs` ;
 - Nestor ;
 - intégrations externes ;
 - analytics / knowledge mining.
 
+Le domaine peut référencer :
+
+```text
+deliberation_ref
+mission_ref
+knowledge_ref
+actor_ref
+```
+
+mais ne réimplémente pas le moteur de délibération, Chronos, CCU, IAM ou le routage modèles.
+
 ---
 
-## Contributions humaines et Nestor
+## DOMAIN-00.9 — Spécimens
 
-Le domaine doit accepter des contributions provenant de :
-
-```text
-commentaire
-photo
-plan
-document
-mesure
-annotation
-```
-
-mais préserver la séparation :
+Cas minimum visés :
 
 ```text
-ProjectContribution
-        ↓ analyse Nestor
-Candidate
-        ↓ validation / gate
-Domain object
+muret simple
+pose fenêtre
+constat / visite sans marché remporté
+rénovation multi-lots
+maison individuelle
+lotissement / Program multi-Projects
+qualification numérique non convertie
 ```
 
-Un message ou une analyse IA ne devient pas automatiquement une observation, une décision, une cause ou une responsabilité.
+Le but est de vérifier que le domaine reste proportionné aussi bien pour une petite intervention que pour une opération complexe.
 
-## Qualité et apprentissage
+---
 
-Le domaine doit permettre de conserver les faits nécessaires à des analyses ultérieures :
+## DOMAIN-00.10 — Consolidation technique
+
+À ce stade seulement :
+
+- packages ;
+- IDs ;
+- types ;
+- relations ;
+- événements ;
+- invariants exécutables ;
+- migrations ;
+- tests ;
+- compatibilité avec les projections documentaires et frontend.
+
+---
+
+## Invariants transversaux
 
 ```text
-estimated labour
-actual labour
-quality assessment
-rework
-irregularities
-customer feedback
-evidence
+Program ≠ Project
+Site ≠ Project
+WorkLot ≠ Parcel
+WorkLot ≠ WorkPackage
+WorkPackage ≠ Task
+WorkPackage ≠ QuoteLine
+Task ≠ TimeEntry
+Task ≠ ControlPoint
 ```
 
-La connaissance globale et les patterns ne sont pas promus directement par `mdtc-domain`. Ils alimentent les mécanismes communs Nestor / Chronos / graph après les gates appropriés.
+```text
+Contribution ≠ Observation validée
+Observation ≠ causalité
+Causalité ≠ responsabilité
+Expertise ≠ autorité ≠ permission
+Decision ≠ Action
+Project live state ≠ contractual baseline
+Nestor interpretation ≠ MDTC business truth
+```
 
 ## Projection UX
 
@@ -210,7 +345,7 @@ Principe :
 
 > **capturer beaucoup en profondeur, afficher peu en surface**.
 
-Exemple de projections :
+Exemples :
 
 ```text
 Qualification
@@ -221,25 +356,10 @@ Mes chantiers
 Mes WorkPackages
 ```
 
-Ces vues doivent être filtrables selon le périmètre de responsabilité effectif de l'acteur.
+Ces vues sont des projections sur les mêmes objets et doivent être filtrables selon le périmètre de responsabilité effectif de l'acteur.
 
 ## Prochaine décision
 
-La prochaine étape de DOMAIN-00.1 est de formaliser précisément :
+DOMAIN-00.1 étant validé conceptuellement, la prochaine discussion porte sur :
 
-```text
-Lot
-WorkPackage
-Task
-```
-
-et leurs relations avec :
-
-```text
-Trade
-QuoteLine
-TimeEntry
-Requirement
-Dependency
-Responsibility
-```
+**DOMAIN-00.2 — Actors / Organizations / Roles / Trades**.

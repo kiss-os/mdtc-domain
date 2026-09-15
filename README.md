@@ -1,6 +1,6 @@
 # mdtc-domain
 
-> **Contrats de domaine construction de la noria MDTC** — projets, lots, work packages, acteurs, ressources, planning, économie, exécution, preuves et responsabilités.
+> **Contrats de domaine construction de la noria MDTC** — projets, work lots, work packages, acteurs, ressources, planning, économie, exécution, preuves et responsabilités.
 
 `mdtc-domain` formalise la vérité métier de la noria **MDTC (Méditerranée Construction)**. Le dépôt décrit les objets, invariants, relations et transitions qui doivent rester indépendants de l'interface utilisateur, du moteur documentaire, du CRM/ERP choisi et de l'implémentation des modèles IA.
 
@@ -40,10 +40,12 @@ Program ≠ Project
 Site ≠ Project
 Project ≠ marché signé
 Project ≠ chantier actif
-Lot ≠ WorkPackage
+WorkLot ≠ Parcel
+WorkLot ≠ WorkPackage
 WorkPackage ≠ Task
 WorkPackage ≠ QuoteLine
 Task ≠ TimeEntry
+Task ≠ ControlPoint
 Contribution ≠ Observation validée
 Observation ≠ causalité
 Causalité ≠ responsabilité
@@ -55,28 +57,30 @@ Nestor interpretation ≠ MDTC business truth
 
 ## Hiérarchie opérationnelle
 
-La hiérarchie actuellement adoptée est :
+Hiérarchie validée :
 
 ```text
-Program
+Program?
    ↓
 Project
    ↓
-Lot
+WorkLot?
    ↓
 WorkPackage
    ↓
-Task
+Task?
 ```
 
-Tous les niveaux ne sont pas obligatoires.
+`Project` et `WorkPackage` sont les deux niveaux structurants. `Program`, `WorkLot` et `Task` sont utilisés lorsqu'ils apportent une valeur métier réelle.
+
+`WorkLot` désigne un lot technique et/ou contractuel de travaux. Un lot foncier est modélisé séparément comme `Parcel`.
 
 Un petit chantier peut être modélisé directement comme :
 
 ```text
 Project
 └── WorkPackage
-    └── Tasks
+    └── Tasks?
 ```
 
 Une opération multi-projets, par exemple un lotissement, peut être structurée comme :
@@ -90,6 +94,8 @@ Program — Lotissement Les Oliviers
 ```
 
 Le choix **une maison = un `Project`** permet de préserver un périmètre clair pour le planning, les observations, les preuves, les coûts, la qualité et les responsabilités, tout en laissant `Program` agréger l'ensemble.
+
+Voir [`docs/DOMAIN-00.1-WORK-BREAKDOWN.md`](./docs/DOMAIN-00.1-WORK-BREAKDOWN.md) pour le contrat conceptuel validé de la structure du travail.
 
 ## Définition actuelle de `Project`
 
@@ -151,6 +157,12 @@ QualificationSession
 Project(stage = QUALIFICATION)
 ```
 
+Pendant cette phase, Nestor peut proposer des `WorkPackageCandidate` sans matérialiser immédiatement des `WorkPackage` autoritatifs :
+
+```text
+WorkPackageCandidate ≠ WorkPackage
+```
+
 Une estimation préliminaire reste distincte d'un devis commercial :
 
 ```text
@@ -164,7 +176,7 @@ Les quotas éventuels d'estimations gratuites relèvent d'une policy de produit 
 `mdtc-domain` **doit** contenir les contrats métier relatifs notamment à :
 
 - Program / Project / Site ;
-- Lot / WorkPackage / Task ;
+- WorkLot / WorkPackage / Task ;
 - acteurs, organisations, rôles et corps de métier ;
 - matériaux, équipements, approvisionnement et fourniture ;
 - planning, temps et exécution ;
@@ -192,7 +204,7 @@ Le chantier de fondation est **DOMAIN-00 — ontologie fondamentale du chantier*
 
 Roadmap actuelle :
 
-1. **DOMAIN-00.1** — Project / Program / Work Breakdown / WorkPackage
+1. **DOMAIN-00.1** — Project / Program / Work Breakdown / WorkPackage — **validé conceptuellement**
 2. **DOMAIN-00.2** — Actors / Organizations / Roles / Trades
 3. **DOMAIN-00.3** — Materials / Equipment / Supply / Procurement
 4. **DOMAIN-00.4** — Economics: estimated / committed / actual / billed / paid / margin

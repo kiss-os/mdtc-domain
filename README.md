@@ -46,7 +46,8 @@ WorkPackage ≠ Task
 WorkPackage ≠ QuoteLine
 Task ≠ TimeEntry
 Task ≠ ControlPoint
-Contribution ≠ Observation validée
+Contribution ≠ Observation structurée
+Evidence ≠ vérité
 Observation ≠ causalité
 Causalité ≠ responsabilité
 Expertise ≠ autorité ≠ permission
@@ -56,6 +57,7 @@ Supplier ≠ Subcontractor
 Decision ≠ Action
 Project live state ≠ contractual baseline
 Nestor interpretation ≠ MDTC business truth
+RAW ≠ INTERPRETED ≠ AUTHOR-CONFIRMED ≠ DOMAIN-VALIDATED
 ```
 
 ## Hiérarchie opérationnelle
@@ -98,7 +100,57 @@ Program — Lotissement Les Oliviers
 
 Le choix **une maison = un `Project`** permet de préserver un périmètre clair pour le planning, les observations, les preuves, les coûts, la qualité et les responsabilités, tout en laissant `Program` agréger l'ensemble.
 
-Voir [`docs/DOMAIN-00.1-WORK-BREAKDOWN.md`](./docs/DOMAIN-00.1-WORK-BREAKDOWN.md) pour la structure du travail, et [`docs/DOMAIN-00.2-ACTORS-ROLES-TRADES.md`](./docs/DOMAIN-00.2-ACTORS-ROLES-TRADES.md) pour le modèle des acteurs, rôles et métiers.
+Voir :
+
+- [`docs/DOMAIN-00.1-WORK-BREAKDOWN.md`](./docs/DOMAIN-00.1-WORK-BREAKDOWN.md) — structure du travail ;
+- [`docs/DOMAIN-00.2-ACTORS-ROLES-TRADES.md`](./docs/DOMAIN-00.2-ACTORS-ROLES-TRADES.md) — acteurs, rôles et métiers ;
+- [`docs/DOMAIN-00.3-CONTRIBUTIONS-EVIDENCE.md`](./docs/DOMAIN-00.3-CONTRIBUTIONS-EVIDENCE.md) — contributions, preuves, observations et interprétation multilingue ;
+- [`missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md`](./missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md) — contrat de mission Nestor associé.
+
+## Contributions terrain multilingues
+
+Les intervenants peuvent contribuer dans leur langue réelle de travail via texte, dictée, photo ou document.
+
+Le domaine distingue :
+
+```text
+source_language
+interaction_language
+canonical_language = fr
+```
+
+Flux adopté :
+
+```text
+ProjectContribution originale
+↓
+ContributionInterpretation
+↓
+restitution dans la langue de l'auteur
+↓
+ContributorConfirmation
+↓
+candidats métier
+↓
+gate
+↓
+objet métier autoritatif
+```
+
+La confirmation signifie **« Nestor a correctement compris ce que je voulais signaler »**, et non **« ce fait est techniquement vérifié »**.
+
+Doctrine Nestor anti-embellissement :
+
+> **Une interprétation prudente, traçable et fidèle est préférable à une reformulation élégante mais plus forte que ce que la source permet d'affirmer.**
+
+Nestor doit préserver explicitement :
+
+```text
+STATED_BY_CONTRIBUTOR
+OBSERVED_FROM_EVIDENCE
+INFERRED
+UNKNOWN
+```
 
 ## Définition actuelle de `Project`
 
@@ -181,11 +233,11 @@ Les quotas éventuels d'estimations gratuites relèvent d'une policy de produit 
 - Program / Project / Site ;
 - WorkLot / WorkPackage / Task ;
 - acteurs, organisations, rôles et corps de métier ;
+- contributions terrain, preuves, observations, événements et décisions ;
 - matériaux, équipements, approvisionnement et fourniture ;
 - planning, temps et exécution ;
 - économie chantier ;
-- observations, décisions, actions, risques et changements ;
-- preuves et contributions terrain ;
+- risques, changements et qualité ;
 - responsabilité et contexte de garantie ;
 - baselines contractuelles et projections opérationnelles.
 
@@ -194,10 +246,12 @@ Les quotas éventuels d'estimations gratuites relèvent d'une policy de produit 
 - un CRM ou ERP complet ;
 - un moteur de rendu PDF ;
 - un routeur LLM ;
-- un stockage de prompts ;
+- un stockage de prompts spécifiques à des modèles ;
 - le moteur de délibération Nestor ;
 - une duplication de la CCU, de Chronos ou du graphe de connaissance commun ;
 - une implémentation d'interface React.
+
+Les `Mission Contracts` décrivent des objectifs, gates et contraintes de capacités sans hardcoder un fournisseur ou modèle.
 
 Voir [`SCOPE.md`](./SCOPE.md) pour le périmètre détaillé.
 
@@ -209,7 +263,7 @@ Roadmap actuelle :
 
 1. **DOMAIN-00.1** — Project / Program / Work Breakdown / WorkPackage — **validé conceptuellement**
 2. **DOMAIN-00.2** — Actors / Organizations / Roles / Trades — **validé conceptuellement**
-3. **DOMAIN-00.3** — Contributions / faits / preuves
+3. **DOMAIN-00.3** — Contributions / faits / preuves — **validé conceptuellement**
 4. **DOMAIN-00.4** — Materials / Equipment / Supply / Procurement
 5. **DOMAIN-00.5** — Planning / TimeEntry / Meetings / execution lifecycle
 6. **DOMAIN-00.6** — Economics: estimated / committed / actual / billed / paid / margin

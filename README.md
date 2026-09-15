@@ -58,6 +58,9 @@ Decision ≠ Action
 Project live state ≠ contractual baseline
 Nestor interpretation ≠ MDTC business truth
 RAW ≠ INTERPRETED ≠ AUTHOR-CONFIRMED ≠ DOMAIN-VALIDATED
+owner ≠ provider ≠ custodian ≠ operator
+resource missing ≠ theft established
+loss ≠ responsibility
 ```
 
 ## Hiérarchie opérationnelle
@@ -105,7 +108,8 @@ Voir :
 - [`docs/DOMAIN-00.1-WORK-BREAKDOWN.md`](./docs/DOMAIN-00.1-WORK-BREAKDOWN.md) — structure du travail ;
 - [`docs/DOMAIN-00.2-ACTORS-ROLES-TRADES.md`](./docs/DOMAIN-00.2-ACTORS-ROLES-TRADES.md) — acteurs, rôles et métiers ;
 - [`docs/DOMAIN-00.3-CONTRIBUTIONS-EVIDENCE.md`](./docs/DOMAIN-00.3-CONTRIBUTIONS-EVIDENCE.md) — contributions, preuves, observations et interprétation multilingue ;
-- [`missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md`](./missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md) — contrat de mission Nestor associé.
+- [`docs/DOMAIN-00.4-RESOURCES-SUPPLY-CUSTODY.md`](./docs/DOMAIN-00.4-RESOURCES-SUPPLY-CUSTODY.md) — matériaux, équipements, fourniture, garde et incidents ressources ;
+- [`missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md`](./missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md) — contrat de mission Nestor associé à DOMAIN-00.3.
 
 ## Contributions terrain multilingues
 
@@ -150,6 +154,49 @@ STATED_BY_CONTRIBUTOR
 OBSERVED_FROM_EVIDENCE
 INFERRED
 UNKNOWN
+```
+
+## Ressources, équipements et garde
+
+Le domaine distingue le besoin technique, la ressource concrète, la fourniture et la garde physique.
+
+```text
+MaterialSpecification
+→ MaterialRequirement
+→ MaterialSelection
+```
+
+```text
+EquipmentRequirement
+→ EquipmentAssignment
+→ EquipmentProvision
+→ EquipmentHandover
+→ EquipmentReturn
+```
+
+La transaction commerciale d'une location reste hors scope ; la réalité chantier de la machine louée reste dans le domaine.
+
+```text
+rental transaction
+≠ project equipment custody
+```
+
+Les incidents ressources sont enregistrés comme faits et non comme accusations :
+
+```text
+ResourceIncident
+MISSING / SHORTAGE / DAMAGE / BREAKAGE /
+UNEXPECTED_WASTE / UNAUTHORIZED_USE /
+LOSS / THEFT_REPORTED / OTHER
+```
+
+avec :
+
+```text
+resource missing
+≠ theft established
+≠ perpetrator identified
+≠ responsibility established
 ```
 
 ## Définition actuelle de `Project`
@@ -234,7 +281,7 @@ Les quotas éventuels d'estimations gratuites relèvent d'une policy de produit 
 - WorkLot / WorkPackage / Task ;
 - acteurs, organisations, rôles et corps de métier ;
 - contributions terrain, preuves, observations, événements et décisions ;
-- matériaux, équipements, approvisionnement et fourniture ;
+- matériaux, équipements, approvisionnement, mise à disposition, garde et incidents ressources ;
 - planning, temps et exécution ;
 - économie chantier ;
 - risques, changements et qualité ;
@@ -244,6 +291,8 @@ Les quotas éventuels d'estimations gratuites relèvent d'une policy de produit 
 `mdtc-domain` **ne doit pas** devenir :
 
 - un CRM ou ERP complet ;
+- un WMS complet ;
+- une plateforme e-commerce ou un moteur commercial de location ;
 - un moteur de rendu PDF ;
 - un routeur LLM ;
 - un stockage de prompts spécifiques à des modèles ;
@@ -264,7 +313,7 @@ Roadmap actuelle :
 1. **DOMAIN-00.1** — Project / Program / Work Breakdown / WorkPackage — **validé conceptuellement**
 2. **DOMAIN-00.2** — Actors / Organizations / Roles / Trades — **validé conceptuellement**
 3. **DOMAIN-00.3** — Contributions / faits / preuves — **validé conceptuellement**
-4. **DOMAIN-00.4** — Materials / Equipment / Supply / Procurement
+4. **DOMAIN-00.4** — Materials / Equipment / Supply / Custody — **validé conceptuellement**
 5. **DOMAIN-00.5** — Planning / TimeEntry / Meetings / execution lifecycle
 6. **DOMAIN-00.6** — Economics: estimated / committed / actual / billed / paid / margin
 7. **DOMAIN-00.7** — Quality / Changes / Responsibility

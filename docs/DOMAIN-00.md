@@ -189,30 +189,6 @@ L2 — AUTHOR-CONFIRMED
 L3 — DOMAIN-VALIDATED
 ```
 
-Décisions adoptées :
-
-- l'original est conservé et n'est jamais remplacé silencieusement par un dérivé ;
-- `original ≠ transcription ≠ traduction ≠ interprétation` ;
-- les contributions peuvent être produites dans la langue réelle de l'intervenant ;
-- `source_language`, `interaction_language` et `canonical_language` sont distinguées ;
-- le français est la langue canonique de référence pour les objets métier MDTC ;
-- la restitution utilisateur peut être faite dans sa langue d'interaction, par exemple en turc ;
-- l'UX mobile doit privilégier voix, photo, correction et confirmation simple ;
-- une lecture vocale de la restitution doit pouvoir être proposée ;
-- l'auteur confirme que Nestor a correctement compris son propos, pas que le fait est techniquement vérifié ;
-- `ContributionInterpretation` sépare obligatoirement `STATED_BY_CONTRIBUTOR`, `OBSERVED_FROM_EVIDENCE`, `INFERRED` et `UNKNOWN` ;
-- Nestor ne doit pas embellir, durcir ou accroître la certitude du propos source ;
-- Nestor ne devient jamais l'auteur fictif d'une contribution humaine ;
-- `Evidence` documente ou étaye mais n'est pas assimilée à la vérité ;
-- une `Observation` peut être `REPORTED`, `CORROBORATED`, `VERIFIED`, `DISPUTED` ou `RETRACTED` ;
-- `ProjectEvent` représente un événement métier, pas l'event bus technique ;
-- document reçu, revu, approuvé et baseline sont distincts ;
-- `Issue`, `Blocker`, `Delay` et `Risk` restent distincts ;
-- `Decision ≠ Action` ;
-- `Action COMPLETED ≠ Issue RESOLVED` ;
-- une contribution banale peut rester uniquement une contribution ;
-- les actes à enjeu juridique, contractuel, financier, sécurité ou responsabilité nécessitent un gate d'autorité supplémentaire.
-
 Doctrine de mission Nestor :
 
 > **Une interprétation prudente, traçable et fidèle est préférable à une reformulation élégante mais plus forte que ce que la source permet d'affirmer.**
@@ -246,26 +222,6 @@ MaterialUsageRecord
 ResourceIncident
 ```
 
-Décisions adoptées :
-
-- `Material ≠ Equipment` ;
-- la spécification technique reste distincte du produit commercial ;
-- le besoin ressource reste distinct du besoin d'achat ;
-- une proposition de produit ou substitution n'est jamais assimilée à une approbation ;
-- `supplied_by`, `paid_by`, `installed_by`, `owned_by` et `liable_for` sont des dimensions distinctes ;
-- une fourniture client ne détermine pas automatiquement la responsabilité d'un défaut ;
-- l'affectation d'un équipement ne signifie pas qu'il a été physiquement remis à un acteur ;
-- `owner`, `provider`, `custodian` et `operator` restent distincts ;
-- les équipements MDTC, sous-traitants ou partenaires peuvent être mis à disposition et remis physiquement avec état/accessoires/evidence ;
-- un retour peut enregistrer état et accessoires manquants sans conclure à une faute ;
-- `ResourceIncident` couvre disparition, shortage, casse, dommage, perte, usage non autorisé, gaspillage inattendu et vol signalé ;
-- `resource missing ≠ theft established ≠ perpetrator identified ≠ responsibility established` ;
-- `damage ≠ negligence`, `unexpected waste ≠ fraud`, `variance ≠ fraud` ;
-- la causalité et la responsabilité restent reportées à DOMAIN-00.7 ;
-- le WMS complet, la comptabilité fournisseur et la transaction commerciale de location restent hors scope ;
-- une machine louée extérieurement redevient pertinente dès qu'elle entre dans la réalité opérationnelle du chantier ;
-- `rental transaction ≠ project equipment custody`.
-
 Invariants principaux :
 
 ```text
@@ -273,49 +229,118 @@ MaterialSpecification ≠ CommercialProduct
 ResourceRequirement ≠ ProcurementNeed
 EquipmentRequirement ≠ EquipmentAssignment
 EquipmentAssignment ≠ EquipmentHandover
-```
-
-```text
 owner ≠ provider ≠ custodian ≠ operator
-```
-
-```text
-ORDERED ≠ DELIVERED ≠ RECEIVED ≠ INSPECTED ≠ ACCEPTED ≠ INCORPORATED
-```
-
-```text
-WASTED ≠ abnormal waste ≠ negligence ≠ responsibility
 resource missing ≠ theft established
-reported theft ≠ verified theft
+loss ≠ responsibility
 ```
 
 ---
 
 ## DOMAIN-00.5 — Planning / Time / Meetings / Execution
 
-À cadrer :
+Status: **validated conceptually**
 
-- planning ;
-- `TimeEntry` ;
-- visite ;
-- réunion ;
-- jalon ;
-- dépendances ;
-- blocage ;
-- suspension ;
-- état d'exécution.
+Document détaillé : [`DOMAIN-00.5-PLANNING-TIME-EXECUTION.md`](./DOMAIN-00.5-PLANNING-TIME-EXECUTION.md)
 
-Invariant :
+Noyau adopté :
 
 ```text
-SiteMeeting ≠ TimeEntry ≠ BillableItem
+Schedule
+ScheduleRevision
+ScheduleActivity
+Dependency
+Milestone
+ReadinessAssessment
+ExecutionStateProjection
+ProgressAssessment
+ScheduleVariance
+TimeEntry
+SiteVisit
+SiteMeeting
+MeetingAttendance
 ```
+
+Décisions adoptées :
+
+- `WorkPackage ≠ ScheduleActivity` ;
+- `PLANNED ≠ FORECAST ≠ ACTUAL` ;
+- une révision publiée de planning ne doit pas être réécrite silencieusement ;
+- planning publié et baseline contractuelle restent distincts ;
+- `Dependency ≠ Interface` ;
+- `scheduled ≠ ready` ;
+- `BLOCKED ≠ SUSPENDED` ;
+- `Blocker ≠ ScheduleVariance ≠ Cause ≠ Responsibility` ;
+- une replanification n'est pas automatiquement un retard ;
+- `TimeEntry` est du temps opérationnel déclaré, distinct du coût, de la paie et de la facturation ;
+- `SiteVisit`, `SiteMeeting`, `MeetingAttendance` et `TimeEntry` sont des objets distincts ;
+- un compte rendu produit par LLM n'est pas automatiquement un procès-verbal approuvé ;
+- un avancement à 100 % n'implique ni qualité validée ni réception ;
+- `Execution COMPLETED ≠ ACCEPTED ≠ CLOSEOUT` ;
+- chaque `Project` conserve son propre planning ; un `Program` peut agréger une projection de coordination ;
+- les calendriers externes sont des projections ou des sources candidates, pas l'autorité implicite du planning MDTC ;
+- toute mutation externe doit passer par un candidate/gate avant de produire une `ScheduleRevision` ;
+- les timesheets externes peuvent alimenter `TimeEntry` à condition de préserver la provenance ;
+- un échec d'intégration ne doit pas muter l'état métier ;
+- les providers d'intégration restent hors de l'ontologie et seront consolidés en DOMAIN-00.8.
+
+Invariants :
+
+```text
+WorkPackage ≠ ScheduleActivity
+PLANNED ≠ FORECAST ≠ ACTUAL
+published schedule ≠ contractual baseline
+scheduled ≠ ready
+Dependency ≠ Interface
+planned milestone ≠ achieved milestone
+BLOCKED ≠ SUSPENDED
+```
+
+```text
+Blocker ≠ ScheduleVariance
+Blocker ≠ Delay
+schedule revised ≠ project delayed
+ScheduleVariance ≠ Cause ≠ Responsibility
+```
+
+```text
+SiteVisit ≠ TimeEntry
+SiteMeeting ≠ TimeEntry ≠ BillableItem
+MeetingAttendance ≠ TimeEntry
+TimeEntry ≠ CostEntry ≠ PayrollEntry ≠ BillableItem
+```
+
+```text
+Progress 100% ≠ quality accepted ≠ technical acceptance ≠ contractual acceptance
+Execution COMPLETED ≠ ACCEPTED ≠ CLOSEOUT
+```
+
+```text
+external calendar ≠ authoritative MDTC schedule
+external mutation → candidate → policy/gate → ScheduleRevision
+external timesheet → provenance-preserving import → MDTC TimeEntry
+integration failure ≠ domain state mutation
+```
+
+```text
+AI-generated schedule ≠ approved schedule
+AI forecast ≠ schedule commitment ≠ contractual baseline
+```
+
+Note d'architecture transverse différée à DOMAIN-00.8 :
+
+```text
+Nestor Core = autonomous / local-first
+nest0r.ai = optional ecosystem
+A Noria may depend on nest0r.ai without making Nestor depend on nest0r.ai.
+```
+
+Les intégrations FastMCP/API/provider/future federation sont résolues par Nestor et ne deviennent pas des concepts du domaine MDTC.
 
 ---
 
 ## DOMAIN-00.6 — Economics
 
-Axes :
+À cadrer :
 
 ```text
 ESTIMATED
@@ -372,6 +397,20 @@ Objectif : consolider l'ontologie, les événements et les projections consommé
 - intégrations externes ;
 - analytics / knowledge mining.
 
+À reprendre explicitement :
+
+```text
+capability discovery
+noria requires / exposes
+FastMCP actuel
+Langflow candidat / hypothèse
+providers externes
+onboarding partenaires
+matrix d'autorité des systèmes externes
+fédération inter-Nestor
+local-first / nest0r.ai optionnel
+```
+
 ---
 
 ## DOMAIN-00.9 — Spécimens
@@ -390,6 +429,9 @@ contribution terrain multilingue voix + photos
 mise à disposition équipement MDTC → salarié/sous-traitant
 équipement fourni par un sous-traitant
 perte/casse/disparition de ressource sans attribution automatique de faute
+planning révisé sans écrasement de l'historique
+timesheet externe avec provenance
+calendrier externe projeté sans autorité sur le planning
 ```
 
 ---
@@ -450,6 +492,12 @@ resource missing ≠ theft established
 loss ≠ responsibility
 ```
 
+```text
+PLANNED ≠ FORECAST ≠ ACTUAL
+TimeEntry ≠ CostEntry ≠ PayrollEntry ≠ BillableItem
+external calendar ≠ authoritative MDTC schedule
+```
+
 ## Projection UX
 
 Principe :
@@ -468,10 +516,13 @@ Mes WorkPackages
 Contribution terrain mobile
 Matériel mis à disposition
 Retours / anomalies ressources
+Planning projet
+Mes heures
+Réunions / visites
 ```
 
 ## Prochaine décision
 
-DOMAIN-00.4 étant validé conceptuellement, la prochaine discussion porte sur :
+DOMAIN-00.5 étant validé conceptuellement, la prochaine discussion porte sur :
 
-**DOMAIN-00.5 — Planning / Time / Meetings / Execution**.
+**DOMAIN-00.6 — Economics**.

@@ -160,35 +160,6 @@ Decision
 Action
 ```
 
-Chaîne de traitement multilingue adoptée :
-
-```text
-ProjectContribution originale
-        ↓
-Nestor interprète
-        ↓
-ContributionInterpretation
-        ↓
-restitution dans interaction_language
-        ↓
-ContributorConfirmation
-        ↓
-ConfirmedInterpretation
-        ↓
-candidats métier
-        ↓ gate éventuel
-objet métier autoritatif
-```
-
-Niveaux épistémiques :
-
-```text
-L0 — RAW
-L1 — INTERPRETED
-L2 — AUTHOR-CONFIRMED
-L3 — DOMAIN-VALIDATED
-```
-
 Doctrine de mission Nestor :
 
 > **Une interprétation prudente, traçable et fidèle est préférable à une reformulation élégante mais plus forte que ce que la source permet d'affirmer.**
@@ -260,30 +231,7 @@ SiteMeeting
 MeetingAttendance
 ```
 
-Décisions adoptées :
-
-- `WorkPackage ≠ ScheduleActivity` ;
-- `PLANNED ≠ FORECAST ≠ ACTUAL` ;
-- une révision publiée de planning ne doit pas être réécrite silencieusement ;
-- planning publié et baseline contractuelle restent distincts ;
-- `Dependency ≠ Interface` ;
-- `scheduled ≠ ready` ;
-- `BLOCKED ≠ SUSPENDED` ;
-- `Blocker ≠ ScheduleVariance ≠ Cause ≠ Responsibility` ;
-- une replanification n'est pas automatiquement un retard ;
-- `TimeEntry` est du temps opérationnel déclaré, distinct du coût, de la paie et de la facturation ;
-- `SiteVisit`, `SiteMeeting`, `MeetingAttendance` et `TimeEntry` sont des objets distincts ;
-- un compte rendu produit par LLM n'est pas automatiquement un procès-verbal approuvé ;
-- un avancement à 100 % n'implique ni qualité validée ni réception ;
-- `Execution COMPLETED ≠ ACCEPTED ≠ CLOSEOUT` ;
-- chaque `Project` conserve son propre planning ; un `Program` peut agréger une projection de coordination ;
-- les calendriers externes sont des projections ou des sources candidates, pas l'autorité implicite du planning MDTC ;
-- toute mutation externe doit passer par un candidate/gate avant de produire une `ScheduleRevision` ;
-- les timesheets externes peuvent alimenter `TimeEntry` à condition de préserver la provenance ;
-- un échec d'intégration ne doit pas muter l'état métier ;
-- les providers d'intégration restent hors de l'ontologie et seront consolidés en DOMAIN-00.8.
-
-Invariants :
+Invariants principaux :
 
 ```text
 WorkPackage ≠ ScheduleActivity
@@ -310,47 +258,93 @@ TimeEntry ≠ CostEntry ≠ PayrollEntry ≠ BillableItem
 ```
 
 ```text
-Progress 100% ≠ quality accepted ≠ technical acceptance ≠ contractual acceptance
-Execution COMPLETED ≠ ACCEPTED ≠ CLOSEOUT
-```
-
-```text
 external calendar ≠ authoritative MDTC schedule
 external mutation → candidate → policy/gate → ScheduleRevision
 external timesheet → provenance-preserving import → MDTC TimeEntry
 integration failure ≠ domain state mutation
 ```
 
-```text
-AI-generated schedule ≠ approved schedule
-AI forecast ≠ schedule commitment ≠ contractual baseline
-```
-
-Note d'architecture transverse différée à DOMAIN-00.8 :
-
-```text
-Nestor Core = autonomous / local-first
-nest0r.ai = optional ecosystem
-A Noria may depend on nest0r.ai without making Nestor depend on nest0r.ai.
-```
-
-Les intégrations FastMCP/API/provider/future federation sont résolues par Nestor et ne deviennent pas des concepts du domaine MDTC.
-
 ---
 
 ## DOMAIN-00.6 — Economics
 
-À cadrer :
+Status: **validated conceptually**
+
+Document détaillé : [`DOMAIN-00.6-ECONOMICS.md`](./DOMAIN-00.6-ECONOMICS.md)
+
+Noyau adopté :
 
 ```text
-ESTIMATED
-COMMITTED
-ACTUAL
-BILLED
-PAID
+MoneyValue
+PreliminaryEstimate
+CostEstimate
+InternalBudget
+BudgetRevision
+CostCommitment
+ActualCost
+CostRateSnapshot
+RevenueEstimate
+ContractedRevenue
+BilledRevenue
+Settlement
+EconomicAllocation
+EconomicForecast
+MarginProjection
 ```
 
-Le modèle doit permettre l'analyse des écarts et marges sans confondre coût réel et facturation.
+Décisions adoptées :
+
+- `COST ≠ REVENUE ≠ CASH` ;
+- les axes `ESTIMATED / COMMITTED / ACTUAL / BILLED / PAID` sont des projections de pilotage et non un cycle d'état unique ;
+- `CostEstimate ≠ InternalBudget ≠ CommercialQuote` ;
+- `PreliminaryEstimate ≠ CommercialQuote ≠ Contract` ;
+- `COMMITTED COST ≠ ACTUAL COST ≠ CASH OUT` ;
+- `quoted revenue ≠ contracted revenue ≠ billed revenue ≠ collected cash` ;
+- `ActualCost ≠ SupplierInvoice ≠ CashPayment` ;
+- `TimeEntry` reste distinct du coût ; le coût travail est dérivé via un `CostRateSnapshot` traçable ;
+- `CostRate ≠ SalaryRate` ;
+- un temps non confirmé n'est pas automatiquement un coût travail autoritatif ;
+- les coûts matériaux doivent conserver leur base de valorisation sans réimplémenter la comptabilité de stock ;
+- `ResourceIncident ≠ ActualCost ≠ Responsibility` ;
+- un impact économique de `ChangeRequest` ne modifie pas le revenu contracté avant gate/avenant accepté ;
+- `CashIn ≠ Revenue` et `CashOut ≠ Cost` ;
+- `EconomicAllocation` répartit une valeur existante et ne doit ni créer de double comptage ni être interprétée comme causalité ;
+- la marge est une projection dérivée avec bases et date explicites, pas un champ mutable de `Project` ;
+- `rework cost ≠ liability` ;
+- `AI estimate ≠ approved budget ≠ commercial price ≠ contractual commitment` ;
+- `mdtc-domain ≠ general ledger`.
+
+Invariants principaux :
+
+```text
+COST ≠ REVENUE ≠ CASH
+CostEstimate ≠ InternalBudget ≠ CommercialQuote
+PreliminaryEstimate ≠ CommercialQuote ≠ Contract
+```
+
+```text
+COMMITTED COST ≠ ACTUAL COST ≠ CASH OUT
+quoted revenue ≠ contracted revenue ≠ billed revenue ≠ collected cash
+ActualCost ≠ SupplierInvoice ≠ CashPayment
+```
+
+```text
+TimeEntry ≠ ActualCost
+CostRate ≠ SalaryRate
+ResourceIncident ≠ ActualCost ≠ Responsibility
+```
+
+```text
+CashIn ≠ Revenue
+CashOut ≠ Cost
+EconomicAllocation ≠ additional cost
+EconomicAllocation ≠ causal attribution
+```
+
+```text
+Margin = derived projection ≠ mutable source-of-truth field
+AI estimate ≠ approved budget ≠ commercial price ≠ contractual commitment
+```
 
 ---
 
@@ -432,6 +426,11 @@ perte/casse/disparition de ressource sans attribution automatique de faute
 planning révisé sans écrasement de l'historique
 timesheet externe avec provenance
 calendrier externe projeté sans autorité sur le planning
+budget interne distinct du devis
+engagement fournisseur avant facture
+coût réel avant paiement
+paiement partiel avec allocation
+forecast EAC / marge finale
 ```
 
 ---
@@ -498,6 +497,13 @@ TimeEntry ≠ CostEntry ≠ PayrollEntry ≠ BillableItem
 external calendar ≠ authoritative MDTC schedule
 ```
 
+```text
+COST ≠ REVENUE ≠ CASH
+CostEstimate ≠ InternalBudget ≠ CommercialQuote
+ActualCost ≠ SupplierInvoice ≠ CashPayment
+Margin ≠ source-of-truth field
+```
+
 ## Projection UX
 
 Principe :
@@ -519,10 +525,14 @@ Retours / anomalies ressources
 Planning projet
 Mes heures
 Réunions / visites
+Budget chantier
+Coûts engagés / réels
+Facturé / encaissé
+Forecast coût final / marge
 ```
 
 ## Prochaine décision
 
-DOMAIN-00.5 étant validé conceptuellement, la prochaine discussion porte sur :
+DOMAIN-00.6 étant validé conceptuellement, la prochaine discussion porte sur :
 
-**DOMAIN-00.6 — Economics**.
+**DOMAIN-00.7 — Quality / Changes / Responsibility**.

@@ -111,21 +111,6 @@ Status: **validated conceptually**
 
 Document détaillé : [`DOMAIN-00.2-ACTORS-ROLES-TRADES.md`](./DOMAIN-00.2-ACTORS-ROLES-TRADES.md)
 
-Décisions adoptées :
-
-- `Person` et `Organization` restent des identités du socle ; `mdtc-domain` les référence via `PartyRef` ;
-- `ProjectActor` représente la participation contextualisée d'une personne ou organisation à un `Project` ;
-- `RoleAssignment` décrit la fonction exercée dans un scope donné ;
-- `TradeAssignment` décrit la discipline / le corps de métier dans un scope donné ;
-- `RepresentationAssignment` relie une personne à l'organisation au nom de laquelle elle agit ;
-- `AuthorityAssignment` représente une autorité métier contextualisée sans devenir une permission système ;
-- `WorkScopeRef` permet de porter le scope au niveau `Program`, `Project`, `WorkLot`, `WorkPackage` ou `Task` ;
-- l'expertise globale/calibrée reste dans Nestor / CCU ; le domaine peut seulement la référencer ;
-- les permissions effectives restent résolues par Nestor / CCU / Mithra ;
-- la responsabilité détaillée est reportée à DOMAIN-00.7 ;
-- `PARTNER ≠ SUBCONTRACTOR` ;
-- `SUPPLIER ≠ SUBCONTRACTOR`.
-
 Invariants :
 
 ```text
@@ -292,28 +277,6 @@ EconomicForecast
 MarginProjection
 ```
 
-Décisions adoptées :
-
-- `COST ≠ REVENUE ≠ CASH` ;
-- les axes `ESTIMATED / COMMITTED / ACTUAL / BILLED / PAID` sont des projections de pilotage et non un cycle d'état unique ;
-- `CostEstimate ≠ InternalBudget ≠ CommercialQuote` ;
-- `PreliminaryEstimate ≠ CommercialQuote ≠ Contract` ;
-- `COMMITTED COST ≠ ACTUAL COST ≠ CASH OUT` ;
-- `quoted revenue ≠ contracted revenue ≠ billed revenue ≠ collected cash` ;
-- `ActualCost ≠ SupplierInvoice ≠ CashPayment` ;
-- `TimeEntry` reste distinct du coût ; le coût travail est dérivé via un `CostRateSnapshot` traçable ;
-- `CostRate ≠ SalaryRate` ;
-- un temps non confirmé n'est pas automatiquement un coût travail autoritatif ;
-- les coûts matériaux doivent conserver leur base de valorisation sans réimplémenter la comptabilité de stock ;
-- `ResourceIncident ≠ ActualCost ≠ Responsibility` ;
-- un impact économique de `ChangeRequest` ne modifie pas le revenu contracté avant gate/avenant accepté ;
-- `CashIn ≠ Revenue` et `CashOut ≠ Cost` ;
-- `EconomicAllocation` répartit une valeur existante et ne doit ni créer de double comptage ni être interprétée comme causalité ;
-- la marge est une projection dérivée avec bases et date explicites, pas un champ mutable de `Project` ;
-- `rework cost ≠ liability` ;
-- `AI estimate ≠ approved budget ≠ commercial price ≠ contractual commitment` ;
-- `mdtc-domain ≠ general ledger`.
-
 Invariants principaux :
 
 ```text
@@ -350,33 +313,123 @@ AI estimate ≠ approved budget ≠ commercial price ≠ contractual commitment
 
 ## DOMAIN-00.7 — Quality / Changes / Responsibility
 
-À cadrer notamment :
+Status: **validated conceptually**
+
+Document détaillé : [`DOMAIN-00.7-QUALITY-CHANGES-RESPONSIBILITY.md`](./DOMAIN-00.7-QUALITY-CHANGES-RESPONSIBILITY.md)
+
+Mission Nestor associée : [`../missions/contracts/ASSESS-PROJECT-QUALITY-CHANGE-RESPONSIBILITY.md`](../missions/contracts/ASSESS-PROJECT-QUALITY-CHANGE-RESPONSIBILITY.md)
+
+Noyau adopté :
 
 ```text
-WorkExecutionAssessment
+ApplicableQualityRequirement
+ControlPoint
+QualityInspection
+InspectionResult
 ExecutionIrregularity
-Rework
+Defect
+NonConformity
+NonConformityDisposition
+WorkExecutionAssessment
 QualityAssessment
+Rework
 CustomerFeedback
+AcceptanceRecord
+Reservation
+
 ChangeRequest
 ImpactAssessment
 DecisionRecord
 ChangeOrder
 ProjectBaseline
+
+ResponsibilityAssignment
+CausalityAssessment
+ResponsibilityAssessment
 ResponsibilityAllocation
+WarrantyClaim
+WarrantyCoverageAssessment
 ```
 
-Une baseline acceptée ne doit pas être réécrite.
+Décisions adoptées :
 
-Le domaine décrit les faits nécessaires au raisonnement juridique sans inventer automatiquement la règle de droit.
+- `fact ≠ causality ≠ responsibility ≠ legal effect` ;
+- une exigence connue n'est pas automatiquement applicable au projet ;
+- `Task ≠ ControlPoint` et `ControlPoint ≠ QualityInspection` ;
+- une inspection effectuée n'est pas une inspection réussie et une inspection réussie n'est pas une réception contractuelle ;
+- `Observation`, `ExecutionIrregularity`, `Defect` et `NonConformity` restent distincts ;
+- une non-conformité sépare obligatoirement sa `nature`, ses impacts et sa disposition ;
+- les natures initiales incluent `TECHNICAL`, `COSMETIC`, `OPERATIONAL`, `SAFETY`, `DOCUMENTARY`, `OTHER` ;
+- une non-conformité technique n'établit pas automatiquement garantie, assurance ou responsabilité ;
+- une non-conformité cosmétique peut être explicitement acceptée par l'autorité compétente sans effacer l'écart historique ;
+- une non-conformité opératoire peut être corrigée ou ne pas avoir d'impact significatif sur le livrable sans pour autant être confondue avec une conformité historique ;
+- après correction vérifiée, le scope courant peut redevenir conforme mais l'historique de la non-conformité reste immuable ;
+- `client acceptance ≠ universal technical / contractual / regulatory / insurance authority` ;
+- `WorkExecutionAssessment` porte sur l'exécution / le WorkPackage, jamais sur une note globale d'une personne ;
+- `CustomerFeedback ≠ TechnicalQuality` ;
+- un événement sécurité critique n'est jamais moyenné dans une note qualité ;
+- `Rework ≠ Responsibility` et `rework cost ≠ liability` ;
+- `Execution COMPLETED ≠ technical acceptance ≠ contractual acceptance` ;
+- `Reservation ≠ NonConformity` ;
+- `ChangeRequest ≠ approved change` et `ImpactAssessment ≠ approved change` ;
+- une nouvelle révision documentaire produit un impact candidate, pas une mutation silencieuse ;
+- `unknown impact ≠ zero impact` ;
+- `internally approved change ≠ client-accepted ChangeOrder` ;
+- une action d'urgence sécurité ne dépend pas d'un avenant commercial accepté ;
+- une `ProjectBaseline` acceptée est une référence historique immuable ; une nouvelle baseline la supersède sans la réécrire ;
+- `Project live state ≠ ProjectBaseline` ;
+- `ResponsibilityAssignment ≠ RoleAssignment ≠ AuthorityAssignment ≠ Permission` ;
+- une responsabilité assignée n'est pas un blâme ;
+- temporalité et corrélation n'établissent pas la causalité ; causalité et responsabilité restent distinctes ;
+- `ResponsibilityAssessment ≠ ResponsibilityAllocation` ;
+- `EconomicAllocation ≠ ResponsibilityAllocation` ;
+- une allocation métier de responsabilité n'est pas automatiquement un jugement juridique final ;
+- `WarrantyClaim ≠ verified defect ≠ accepted coverage ≠ responsibility` ;
+- Nestor produit des candidats et assessments traçables, jamais une responsabilité ou conclusion juridique autoritative sans gate compétent.
 
-Invariant :
+Invariants principaux :
 
 ```text
-fact
-≠ causality
-≠ responsibility
-≠ legal effect
+fact ≠ causality ≠ responsibility ≠ legal effect
+```
+
+```text
+NONCONFORMITY NATURE
+≠ NONCONFORMITY IMPACT
+≠ NONCONFORMITY DISPOSITION
+```
+
+```text
+accepted deviation ≠ historical conformity
+corrected + verified nonconformity may restore current conformity
+historical nonconformity remains immutable
+```
+
+```text
+client acceptance
+≠ universal technical / contractual / regulatory / insurance authority
+```
+
+```text
+Rework ≠ Responsibility
+rework cost ≠ liability
+```
+
+```text
+ChangeRequest ≠ approved change
+ImpactAssessment ≠ approved change
+new technical document revision ≠ accepted Project change
+unknown impact ≠ zero impact
+```
+
+```text
+accepted baseline = immutable historical reference
+Project live state ≠ ProjectBaseline
+```
+
+```text
+ResponsibilityAssessment ≠ ResponsibilityAllocation
+EconomicAllocation ≠ ResponsibilityAllocation
 ```
 
 ---
@@ -403,6 +456,8 @@ onboarding partenaires
 matrix d'autorité des systèmes externes
 fédération inter-Nestor
 local-first / nest0r.ai optionnel
+pattern mining / promotion de connaissance
+notification / audience / projections
 ```
 
 ---
@@ -431,6 +486,13 @@ engagement fournisseur avant facture
 coût réel avant paiement
 paiement partiel avec allocation
 forecast EAC / marge finale
+non-conformité cosmétique acceptée par autorité compétente
+non-conformité opératoire corrigée avant livraison
+non-conformité technique avec impact garantie/assurance à évaluer
+rework avec coût mais sans responsabilité établie
+responsabilité contestée / causalité multihypothèse
+nouvelle révision technique sans mutation automatique de baseline
+client change request avec impact économique mais sans ChangeOrder accepté
 ```
 
 ---
@@ -504,6 +566,13 @@ ActualCost ≠ SupplierInvoice ≠ CashPayment
 Margin ≠ source-of-truth field
 ```
 
+```text
+fact ≠ causality ≠ responsibility ≠ legal effect
+NONCONFORMITY NATURE ≠ NONCONFORMITY IMPACT ≠ NONCONFORMITY DISPOSITION
+Rework ≠ Responsibility
+EconomicAllocation ≠ ResponsibilityAllocation
+```
+
 ## Projection UX
 
 Principe :
@@ -529,10 +598,16 @@ Budget chantier
 Coûts engagés / réels
 Facturé / encaissé
 Forecast coût final / marge
+Contrôles qualité
+Non-conformités / dispositions
+Réserves / réception
+Changements / impacts
+Responsabilités / causalité
+AFTERCARE / réclamations
 ```
 
 ## Prochaine décision
 
-DOMAIN-00.6 étant validé conceptuellement, la prochaine discussion porte sur :
+DOMAIN-00.7 étant validé conceptuellement, la prochaine discussion porte sur :
 
-**DOMAIN-00.7 — Quality / Changes / Responsibility**.
+**DOMAIN-00.8 — Consolidation Nestor / event model / projections**.

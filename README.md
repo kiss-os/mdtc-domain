@@ -61,11 +61,12 @@ RAW ≠ INTERPRETED ≠ AUTHOR-CONFIRMED ≠ DOMAIN-VALIDATED
 owner ≠ provider ≠ custodian ≠ operator
 resource missing ≠ theft established
 loss ≠ responsibility
+PLANNED ≠ FORECAST ≠ ACTUAL
+TimeEntry ≠ CostEntry ≠ PayrollEntry ≠ BillableItem
+external calendar ≠ authoritative MDTC schedule
 ```
 
 ## Hiérarchie opérationnelle
-
-Hiérarchie validée :
 
 ```text
 Program?
@@ -83,39 +84,18 @@ Task?
 
 `WorkLot` désigne un lot technique et/ou contractuel de travaux. Un lot foncier est modélisé séparément comme `Parcel`.
 
-Un petit chantier peut être modélisé directement comme :
-
-```text
-Project
-└── WorkPackage
-    └── Tasks?
-```
-
-Une opération multi-projets, par exemple un lotissement, peut être structurée comme :
-
-```text
-Program — Lotissement Les Oliviers
-├── Project — Maison 01
-├── Project — Maison 02
-├── Project — Maison 03
-└── Project — VRD / communs
-```
-
-Le choix **une maison = un `Project`** permet de préserver un périmètre clair pour le planning, les observations, les preuves, les coûts, la qualité et les responsabilités, tout en laissant `Program` agréger l'ensemble.
-
 Voir :
 
 - [`docs/DOMAIN-00.1-WORK-BREAKDOWN.md`](./docs/DOMAIN-00.1-WORK-BREAKDOWN.md) — structure du travail ;
 - [`docs/DOMAIN-00.2-ACTORS-ROLES-TRADES.md`](./docs/DOMAIN-00.2-ACTORS-ROLES-TRADES.md) — acteurs, rôles et métiers ;
 - [`docs/DOMAIN-00.3-CONTRIBUTIONS-EVIDENCE.md`](./docs/DOMAIN-00.3-CONTRIBUTIONS-EVIDENCE.md) — contributions, preuves, observations et interprétation multilingue ;
 - [`docs/DOMAIN-00.4-RESOURCES-SUPPLY-CUSTODY.md`](./docs/DOMAIN-00.4-RESOURCES-SUPPLY-CUSTODY.md) — matériaux, équipements, fourniture, garde et incidents ressources ;
+- [`docs/DOMAIN-00.5-PLANNING-TIME-EXECUTION.md`](./docs/DOMAIN-00.5-PLANNING-TIME-EXECUTION.md) — planning, temps, réunions et exécution ;
 - [`missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md`](./missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md) — contrat de mission Nestor associé à DOMAIN-00.3.
 
 ## Contributions terrain multilingues
 
 Les intervenants peuvent contribuer dans leur langue réelle de travail via texte, dictée, photo ou document.
-
-Le domaine distingue :
 
 ```text
 source_language
@@ -141,24 +121,11 @@ gate
 objet métier autoritatif
 ```
 
-La confirmation signifie **« Nestor a correctement compris ce que je voulais signaler »**, et non **« ce fait est techniquement vérifié »**.
-
-Doctrine Nestor anti-embellissement :
+Doctrine Nestor :
 
 > **Une interprétation prudente, traçable et fidèle est préférable à une reformulation élégante mais plus forte que ce que la source permet d'affirmer.**
 
-Nestor doit préserver explicitement :
-
-```text
-STATED_BY_CONTRIBUTOR
-OBSERVED_FROM_EVIDENCE
-INFERRED
-UNKNOWN
-```
-
 ## Ressources, équipements et garde
-
-Le domaine distingue le besoin technique, la ressource concrète, la fourniture et la garde physique.
 
 ```text
 MaterialSpecification
@@ -177,20 +144,10 @@ EquipmentRequirement
 La transaction commerciale d'une location reste hors scope ; la réalité chantier de la machine louée reste dans le domaine.
 
 ```text
-rental transaction
-≠ project equipment custody
+rental transaction ≠ project equipment custody
 ```
 
-Les incidents ressources sont enregistrés comme faits et non comme accusations :
-
-```text
-ResourceIncident
-MISSING / SHORTAGE / DAMAGE / BREAKAGE /
-UNEXPECTED_WASTE / UNAUTHORIZED_USE /
-LOSS / THEFT_REPORTED / OTHER
-```
-
-avec :
+Les incidents ressources restent factuels :
 
 ```text
 resource missing
@@ -199,25 +156,67 @@ resource missing
 ≠ responsibility established
 ```
 
+## Planning, temps et exécution
+
+Le domaine sépare structure du travail, planification, forecast, réel et temps humain déclaré.
+
+```text
+WorkPackage / Task
+        │
+        ├── Schedule → quand cela doit arriver
+        ├── Execution → ce qui arrive réellement
+        ├── TimeEntry → temps humain réellement déclaré
+        └── ProjectEvent → événements significatifs
+```
+
+Le noyau de DOMAIN-00.5 comprend :
+
+```text
+Schedule
+ScheduleRevision
+ScheduleActivity
+Dependency
+Milestone
+ReadinessAssessment
+ExecutionStateProjection
+ProgressAssessment
+ScheduleVariance
+TimeEntry
+SiteVisit
+SiteMeeting
+MeetingAttendance
+```
+
+Principes :
+
+```text
+WorkPackage ≠ ScheduleActivity
+PLANNED ≠ FORECAST ≠ ACTUAL
+scheduled ≠ ready
+BLOCKED ≠ SUSPENDED
+Blocker ≠ ScheduleVariance ≠ Cause ≠ Responsibility
+SiteMeeting ≠ TimeEntry ≠ BillableItem
+Execution COMPLETED ≠ ACCEPTED ≠ CLOSEOUT
+```
+
+Les calendriers et timesheets externes peuvent être projetés/importés avec provenance, mais ils ne deviennent jamais implicitement l'autorité du domaine.
+
+```text
+external calendar ≠ authoritative MDTC schedule
+external mutation → candidate → policy/gate → ScheduleRevision
+external timesheet → provenance-preserving import → MDTC TimeEntry
+integration failure ≠ domain state mutation
+```
+
+L'architecture détaillée des providers, MCP, FastMCP, discovery et fédération est différée à DOMAIN-00.8.
+
 ## Définition actuelle de `Project`
 
 Un `Project` est l'enveloppe persistante d'une intention de travail suffisamment identifiée, depuis sa première qualification numérique ou terrain jusqu'à sa clôture, qu'un marché soit finalement remporté ou non.
 
-Un projet peut donc représenter :
-
-- une qualification numérique ou une estimation exploratoire ;
-- une visite ou un constat sur site ;
-- un travail simple comme un muret ou une pose de fenêtre ;
-- une rénovation ou une extension ;
-- une construction complexe ;
-- un projet appartenant à un `Program` plus large ;
-- un dossier non remporté mais ayant généré un travail MDTC traçable.
-
 Le **chantier** est une phase possible d'un `Project`, pas sa définition.
 
 ## Cycle projet — cadrage courant
-
-Le cycle macro envisagé reste volontairement compact :
 
 ```text
 QUALIFICATION
@@ -245,34 +244,6 @@ Le résultat commercial est orthogonal au cycle :
 OPEN | WON | LOST | WITHDRAWN | EXPIRED | NOT_APPLICABLE
 ```
 
-Cela évite de mélanger état métier, issue commerciale et état d'exécution.
-
-## Qualification numérique
-
-Une demande client peut devenir un `Project` dès lors qu'elle déclenche un véritable travail MDTC/Nestor : qualification, décomposition du besoin, estimation, identification d'inconnues ou préparation d'une visite.
-
-```text
-ClientRequest
-    ↓
-QualificationSession
-    ↓
-Project(stage = QUALIFICATION)
-```
-
-Pendant cette phase, Nestor peut proposer des `WorkPackageCandidate` sans matérialiser immédiatement des `WorkPackage` autoritatifs :
-
-```text
-WorkPackageCandidate ≠ WorkPackage
-```
-
-Une estimation préliminaire reste distincte d'un devis commercial :
-
-```text
-PreliminaryEstimate ≠ CommercialQuote
-```
-
-Les quotas éventuels d'estimations gratuites relèvent d'une policy de produit / entitlement et ne doivent pas être codés dans `Project` ni dans le frontend comme autorité.
-
 ## Frontières de responsabilité
 
 `mdtc-domain` **doit** contenir les contrats métier relatifs notamment à :
@@ -282,7 +253,7 @@ Les quotas éventuels d'estimations gratuites relèvent d'une policy de produit 
 - acteurs, organisations, rôles et corps de métier ;
 - contributions terrain, preuves, observations, événements et décisions ;
 - matériaux, équipements, approvisionnement, mise à disposition, garde et incidents ressources ;
-- planning, temps et exécution ;
+- planning, temps, réunions et exécution ;
 - économie chantier ;
 - risques, changements et qualité ;
 - responsabilité et contexte de garantie ;
@@ -302,11 +273,7 @@ Les quotas éventuels d'estimations gratuites relèvent d'une policy de produit 
 
 Les `Mission Contracts` décrivent des objectifs, gates et contraintes de capacités sans hardcoder un fournisseur ou modèle.
 
-Voir [`SCOPE.md`](./SCOPE.md) pour le périmètre détaillé.
-
 ## DOMAIN-00
-
-Le chantier de fondation est **DOMAIN-00 — ontologie fondamentale du chantier**.
 
 Roadmap actuelle :
 
@@ -314,7 +281,7 @@ Roadmap actuelle :
 2. **DOMAIN-00.2** — Actors / Organizations / Roles / Trades — **validé conceptuellement**
 3. **DOMAIN-00.3** — Contributions / faits / preuves — **validé conceptuellement**
 4. **DOMAIN-00.4** — Materials / Equipment / Supply / Custody — **validé conceptuellement**
-5. **DOMAIN-00.5** — Planning / TimeEntry / Meetings / execution lifecycle
+5. **DOMAIN-00.5** — Planning / TimeEntry / Meetings / execution lifecycle — **validé conceptuellement**
 6. **DOMAIN-00.6** — Economics: estimated / committed / actual / billed / paid / margin
 7. **DOMAIN-00.7** — Quality / Changes / Responsibility
 8. **DOMAIN-00.8** — Consolidation Nestor / event model / projections

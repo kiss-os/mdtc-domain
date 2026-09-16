@@ -64,6 +64,10 @@ loss ≠ responsibility
 PLANNED ≠ FORECAST ≠ ACTUAL
 TimeEntry ≠ CostEntry ≠ PayrollEntry ≠ BillableItem
 external calendar ≠ authoritative MDTC schedule
+COST ≠ REVENUE ≠ CASH
+CostEstimate ≠ InternalBudget ≠ CommercialQuote
+ActualCost ≠ SupplierInvoice ≠ CashPayment
+Margin ≠ source-of-truth field
 ```
 
 ## Hiérarchie opérationnelle
@@ -91,6 +95,7 @@ Voir :
 - [`docs/DOMAIN-00.3-CONTRIBUTIONS-EVIDENCE.md`](./docs/DOMAIN-00.3-CONTRIBUTIONS-EVIDENCE.md) — contributions, preuves, observations et interprétation multilingue ;
 - [`docs/DOMAIN-00.4-RESOURCES-SUPPLY-CUSTODY.md`](./docs/DOMAIN-00.4-RESOURCES-SUPPLY-CUSTODY.md) — matériaux, équipements, fourniture, garde et incidents ressources ;
 - [`docs/DOMAIN-00.5-PLANNING-TIME-EXECUTION.md`](./docs/DOMAIN-00.5-PLANNING-TIME-EXECUTION.md) — planning, temps, réunions et exécution ;
+- [`docs/DOMAIN-00.6-ECONOMICS.md`](./docs/DOMAIN-00.6-ECONOMICS.md) — estimation, budget, engagements, coûts réels, revenus, trésorerie et marges ;
 - [`missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md`](./missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md) — contrat de mission Nestor associé à DOMAIN-00.3.
 
 ## Contributions terrain multilingues
@@ -210,6 +215,84 @@ integration failure ≠ domain state mutation
 
 L'architecture détaillée des providers, MCP, FastMCP, discovery et fédération est différée à DOMAIN-00.8.
 
+## Économie chantier
+
+DOMAIN-00.6 sépare coût, revenu et trésorerie.
+
+```text
+COST ≠ REVENUE ≠ CASH
+```
+
+Côté coûts :
+
+```text
+CostEstimate
+↓
+InternalBudget
+↓
+CostCommitment
+↓
+ActualCost
+↓
+CashOut
+```
+
+Côté revenus :
+
+```text
+RevenueEstimate
+↓
+ContractedRevenue
+↓
+BilledRevenue
+↓
+CashIn / Collected
+```
+
+Principes :
+
+```text
+CostEstimate ≠ InternalBudget ≠ CommercialQuote
+PreliminaryEstimate ≠ CommercialQuote ≠ Contract
+COMMITTED COST ≠ ACTUAL COST ≠ CASH OUT
+quoted revenue ≠ contracted revenue ≠ billed revenue ≠ collected cash
+ActualCost ≠ SupplierInvoice ≠ CashPayment
+CashIn ≠ Revenue
+CashOut ≠ Cost
+```
+
+Le coût travail est dérivé de `TimeEntry` via un `CostRateSnapshot` traçable ; le domaine ne devient pas un moteur RH/paie.
+
+```text
+TimeEntry ≠ ActualCost
+CostRate ≠ SalaryRate
+```
+
+Les allocations économiques répartissent des valeurs existantes et ne doivent ni créer de double comptage ni être assimilées à une causalité.
+
+```text
+EconomicAllocation ≠ additional cost
+EconomicAllocation ≠ causal attribution
+```
+
+La marge est une projection explicable et datée :
+
+```text
+Margin = derived projection ≠ mutable source-of-truth field
+```
+
+Nestor peut produire des candidats/forecasts, mais :
+
+```text
+AI estimate ≠ approved budget ≠ commercial price ≠ contractual commitment
+```
+
+`mdtc-domain` reste distinct d'un grand livre comptable :
+
+```text
+mdtc-domain ≠ general ledger
+```
+
 ## Définition actuelle de `Project`
 
 Un `Project` est l'enveloppe persistante d'une intention de travail suffisamment identifiée, depuis sa première qualification numérique ou terrain jusqu'à sa clôture, qu'un marché soit finalement remporté ou non.
@@ -263,6 +346,8 @@ OPEN | WON | LOST | WITHDRAWN | EXPIRED | NOT_APPLICABLE
 
 - un CRM ou ERP complet ;
 - un WMS complet ;
+- un grand livre comptable ;
+- un moteur de paie ;
 - une plateforme e-commerce ou un moteur commercial de location ;
 - un moteur de rendu PDF ;
 - un routeur LLM ;
@@ -282,7 +367,7 @@ Roadmap actuelle :
 3. **DOMAIN-00.3** — Contributions / faits / preuves — **validé conceptuellement**
 4. **DOMAIN-00.4** — Materials / Equipment / Supply / Custody — **validé conceptuellement**
 5. **DOMAIN-00.5** — Planning / TimeEntry / Meetings / execution lifecycle — **validé conceptuellement**
-6. **DOMAIN-00.6** — Economics: estimated / committed / actual / billed / paid / margin
+6. **DOMAIN-00.6** — Economics: estimated / committed / actual / billed / paid / margin — **validé conceptuellement**
 7. **DOMAIN-00.7** — Quality / Changes / Responsibility
 8. **DOMAIN-00.8** — Consolidation Nestor / event model / projections
 9. **DOMAIN-00.9** — Spécimens / validation

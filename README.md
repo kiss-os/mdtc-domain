@@ -1,6 +1,6 @@
 # mdtc-domain
 
-> **Contrats de domaine construction de la noria MDTC** — projets, work lots, work packages, acteurs, ressources, planning, économie, exécution, preuves et responsabilités.
+> **Contrats de domaine construction de la noria MDTC** — projets, work lots, work packages, acteurs, ressources, planning, économie, exécution, preuves, qualité, changements et responsabilités.
 
 `mdtc-domain` formalise la vérité métier de la noria **MDTC (Méditerranée Construction)**. Le dépôt décrit les objets, invariants, relations et transitions qui doivent rester indépendants de l'interface utilisateur, du moteur documentaire, du CRM/ERP choisi et de l'implémentation des modèles IA.
 
@@ -68,6 +68,10 @@ COST ≠ REVENUE ≠ CASH
 CostEstimate ≠ InternalBudget ≠ CommercialQuote
 ActualCost ≠ SupplierInvoice ≠ CashPayment
 Margin ≠ source-of-truth field
+fact ≠ causality ≠ responsibility ≠ legal effect
+NONCONFORMITY NATURE ≠ NONCONFORMITY IMPACT ≠ NONCONFORMITY DISPOSITION
+Rework ≠ Responsibility
+EconomicAllocation ≠ ResponsibilityAllocation
 ```
 
 ## Hiérarchie opérationnelle
@@ -96,7 +100,9 @@ Voir :
 - [`docs/DOMAIN-00.4-RESOURCES-SUPPLY-CUSTODY.md`](./docs/DOMAIN-00.4-RESOURCES-SUPPLY-CUSTODY.md) — matériaux, équipements, fourniture, garde et incidents ressources ;
 - [`docs/DOMAIN-00.5-PLANNING-TIME-EXECUTION.md`](./docs/DOMAIN-00.5-PLANNING-TIME-EXECUTION.md) — planning, temps, réunions et exécution ;
 - [`docs/DOMAIN-00.6-ECONOMICS.md`](./docs/DOMAIN-00.6-ECONOMICS.md) — estimation, budget, engagements, coûts réels, revenus, trésorerie et marges ;
-- [`missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md`](./missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md) — contrat de mission Nestor associé à DOMAIN-00.3.
+- [`docs/DOMAIN-00.7-QUALITY-CHANGES-RESPONSIBILITY.md`](./docs/DOMAIN-00.7-QUALITY-CHANGES-RESPONSIBILITY.md) — qualité, non-conformités, changements, baselines, causalité et responsabilités ;
+- [`missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md`](./missions/contracts/INTERPRET-PROJECT-CONTRIBUTION.md) — mission Nestor d'interprétation des contributions ;
+- [`missions/contracts/ASSESS-PROJECT-QUALITY-CHANGE-RESPONSIBILITY.md`](./missions/contracts/ASSESS-PROJECT-QUALITY-CHANGE-RESPONSIBILITY.md) — mission Nestor d'assessment qualité/changement/responsabilité.
 
 ## Contributions terrain multilingues
 
@@ -174,24 +180,6 @@ WorkPackage / Task
         └── ProjectEvent → événements significatifs
 ```
 
-Le noyau de DOMAIN-00.5 comprend :
-
-```text
-Schedule
-ScheduleRevision
-ScheduleActivity
-Dependency
-Milestone
-ReadinessAssessment
-ExecutionStateProjection
-ProgressAssessment
-ScheduleVariance
-TimeEntry
-SiteVisit
-SiteMeeting
-MeetingAttendance
-```
-
 Principes :
 
 ```text
@@ -212,8 +200,6 @@ external mutation → candidate → policy/gate → ScheduleRevision
 external timesheet → provenance-preserving import → MDTC TimeEntry
 integration failure ≠ domain state mutation
 ```
-
-L'architecture détaillée des providers, MCP, FastMCP, discovery et fédération est différée à DOMAIN-00.8.
 
 ## Économie chantier
 
@@ -263,17 +249,7 @@ CashOut ≠ Cost
 
 Le coût travail est dérivé de `TimeEntry` via un `CostRateSnapshot` traçable ; le domaine ne devient pas un moteur RH/paie.
 
-```text
-TimeEntry ≠ ActualCost
-CostRate ≠ SalaryRate
-```
-
 Les allocations économiques répartissent des valeurs existantes et ne doivent ni créer de double comptage ni être assimilées à une causalité.
-
-```text
-EconomicAllocation ≠ additional cost
-EconomicAllocation ≠ causal attribution
-```
 
 La marge est une projection explicable et datée :
 
@@ -281,17 +257,104 @@ La marge est une projection explicable et datée :
 Margin = derived projection ≠ mutable source-of-truth field
 ```
 
-Nestor peut produire des candidats/forecasts, mais :
+## Qualité, changements et responsabilité
+
+DOMAIN-00.7 impose la séparation :
 
 ```text
-AI estimate ≠ approved budget ≠ commercial price ≠ contractual commitment
+FACT
+≠ CAUSALITY
+≠ RESPONSIBILITY
+≠ AUTHORITY
+≠ LEGAL EFFECT
 ```
 
-`mdtc-domain` reste distinct d'un grand livre comptable :
+La qualité suit un enchaînement explicable :
 
 ```text
-mdtc-domain ≠ general ledger
+ApplicableQualityRequirement
+↓
+ControlPoint
+↓
+QualityInspection
+↓
+InspectionResult
+↓
+Observation / Irregularity / Defect
+↓
+NonConformity?
+↓
+Disposition / Rework / Acceptance
 ```
+
+La non-conformité elle-même sépare trois dimensions :
+
+```text
+NONCONFORMITY NATURE
+≠ NONCONFORMITY IMPACT
+≠ NONCONFORMITY DISPOSITION
+```
+
+Une variation esthétique peut donc être une non-conformité réelle mais acceptée en l'état par l'autorité compétente ; une non-conformité opératoire peut être corrigée ou rester sans impact significatif sur le livrable ; une non-conformité technique peut nécessiter analyse de durabilité, garantie ou assurance sans établir automatiquement couverture ou responsabilité.
+
+```text
+accepted deviation ≠ historical conformity
+corrected + verified nonconformity may restore current conformity
+historical nonconformity remains immutable
+```
+
+Les décisions d'acceptation conservent leur autorité :
+
+```text
+client acceptance
+≠ universal technical / contractual / regulatory / insurance authority
+```
+
+Le domaine n'établit aucune note globale des personnes :
+
+```text
+WorkExecutionAssessment → execution / WorkPackage
+WorkExecutionAssessment ≠ global person rating
+```
+
+Changements :
+
+```text
+ChangeRequest
+↓
+ImpactAssessment
+↓
+DecisionRecord
+↓
+ChangeOrder?
+↓
+ProjectBaseline revision?
+```
+
+Une baseline acceptée est immuable :
+
+```text
+accepted baseline = immutable historical reference
+Project live state ≠ ProjectBaseline
+```
+
+Responsabilité :
+
+```text
+ResponsibilityAssignment
+≠ ResponsibilityAssessment
+≠ ResponsibilityAllocation
+```
+
+et :
+
+```text
+EconomicAllocation ≠ ResponsibilityAllocation
+Rework ≠ Responsibility
+rework cost ≠ liability
+```
+
+Nestor peut proposer des assessments et candidats mais conserve les gates humains/autoritatifs pour les décisions à enjeu.
 
 ## Définition actuelle de `Project`
 
@@ -338,9 +401,10 @@ OPEN | WON | LOST | WITHDRAWN | EXPIRED | NOT_APPLICABLE
 - matériaux, équipements, approvisionnement, mise à disposition, garde et incidents ressources ;
 - planning, temps, réunions et exécution ;
 - économie chantier ;
-- risques, changements et qualité ;
-- responsabilité et contexte de garantie ;
-- baselines contractuelles et projections opérationnelles.
+- exigences applicables, contrôles, non-conformités et dispositions ;
+- changements, baselines et réception ;
+- causalité, responsabilité et contexte de garantie ;
+- projections opérationnelles.
 
 `mdtc-domain` **ne doit pas** devenir :
 
@@ -348,6 +412,7 @@ OPEN | WON | LOST | WITHDRAWN | EXPIRED | NOT_APPLICABLE
 - un WMS complet ;
 - un grand livre comptable ;
 - un moteur de paie ;
+- un moteur juridique ou assurantiel autonome ;
 - une plateforme e-commerce ou un moteur commercial de location ;
 - un moteur de rendu PDF ;
 - un routeur LLM ;
@@ -368,7 +433,7 @@ Roadmap actuelle :
 4. **DOMAIN-00.4** — Materials / Equipment / Supply / Custody — **validé conceptuellement**
 5. **DOMAIN-00.5** — Planning / TimeEntry / Meetings / execution lifecycle — **validé conceptuellement**
 6. **DOMAIN-00.6** — Economics: estimated / committed / actual / billed / paid / margin — **validé conceptuellement**
-7. **DOMAIN-00.7** — Quality / Changes / Responsibility
+7. **DOMAIN-00.7** — Quality / Changes / Responsibility — **validé conceptuellement**
 8. **DOMAIN-00.8** — Consolidation Nestor / event model / projections
 9. **DOMAIN-00.9** — Spécimens / validation
 10. **DOMAIN-00.10** — Consolidation technique
